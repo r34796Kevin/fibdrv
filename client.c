@@ -53,6 +53,6 @@ int main()
     }
 
     close(fd);
-    close(fp);
+    fclose(fp);
     return 0;
 }

@@ -1,3 +1,7 @@
+# Txt
+*.txt
+# Images
+*.png
 # Prerequisites
 *.d
 .cache.mk
