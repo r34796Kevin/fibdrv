@@ -6,6 +6,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+#include <linux/uaccess.h>
 
 MODULE_LICENSE("Dual MIT/GPL");
 MODULE_AUTHOR("National Cheng Kung University, Taiwan");
@@ -60,10 +61,23 @@ static ssize_t fib_read(struct file *file,
                         size_t size,
                         loff_t *offset)
 {
-    return (ssize_t) fib_sequence(*offset);
+    ktime_t start = ktime_get();
+    ssize_t re = fib_sequence(*offset);
+    ktime_t end = ktime_get();
+    ktime_t runtime = ktime_sub(end, start);
+
+    char tmp[128];
+    memset(tmp, 0, 128);
+    snprintf(tmp, sizeof(tmp), "%lld\n", runtime);
+    //    strncpy(buf,tmp,128);
+    copy_to_user(buf, tmp, 128);
+
+    return re;
 }
 
-/* write operation is skipped */
+/* write operation actually returns the time spent on
+ * calculating the fibonacci number at given offset
+ */
 static ssize_t fib_write(struct file *file,
                          const char *buf,
                          size_t size,
