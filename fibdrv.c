@@ -61,18 +61,7 @@ static ssize_t fib_read(struct file *file,
                         size_t size,
                         loff_t *offset)
 {
-    ktime_t start = ktime_get();
-    ssize_t re = fib_sequence(*offset);
-    ktime_t end = ktime_get();
-    ktime_t runtime = ktime_sub(end, start);
-
-    char tmp[128];
-    memset(tmp, 0, 128);
-    snprintf(tmp, sizeof(tmp), "%lld\n", runtime);
-    //    strncpy(buf,tmp,128);
-    copy_to_user(buf, tmp, 128);
-
-    return re;
+    return fib_sequence(*offset);
 }
 
 /* write operation actually returns the time spent on
@@ -83,7 +72,11 @@ static ssize_t fib_write(struct file *file,
                          size_t size,
                          loff_t *offset)
 {
-    return 1;
+    ktime_t start = ktime_get();
+    fib_sequence(*offset);
+    ktime_t end = ktime_get();
+    ktime_t runtime = ktime_sub(end, start);
+    return (ssize_t) ktime_to_ns(runtime);
 }
 
 static loff_t fib_device_lseek(struct file *file, loff_t offset, int orig)

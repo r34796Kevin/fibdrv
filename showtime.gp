@@ -7,6 +7,5 @@ set term png enhanced font 'Verdana,10'
 
 set output 'runtime.png'
 
-plot [:][:]'time.txt' \
-   using 1:2 with linespoints linewidth 2 title 'user', \
-'' using 1:3 with linespoints linewidth 2 title 'kernel', \
+plot [:][:]'kerneltime.txt' using 1:2 with linespoints linewidth 2 title 'kernel', \
+'usertime.txt' using 1:2 with linespoints linewidth 2 title 'user', \

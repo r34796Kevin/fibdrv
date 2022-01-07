@@ -39,5 +39,6 @@ check: all
 	$(MAKE) unload
 	@diff -u out scripts/expected.txt && $(call pass)
 	@scripts/verify.py
-plot: time.txt
-	gnuplot showtime.gp
+plot:
+	sh do_measurement.sh > /dev/null
+	

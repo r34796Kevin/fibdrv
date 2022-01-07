@@ -20,27 +20,30 @@ int main()
         perror("Failed to open character device");
         exit(1);
     }
-    FILE *fp = fopen("time.txt", "w");
+    FILE *fp1 = fopen("kerneltime.txt", "w");
 
     for (int i = 0; i <= offset; i++) {
         sz = write(fd, write_buf, strlen(write_buf));
-        printf("Writing to " FIB_DEV ", returned the sequence %lld\n", sz);
+        // printf("Writing to " FIB_DEV ", returned the sequence %lld\n", sz);
+        fprintf(fp1, "%d %lld\n", i, sz);
     }
-
+    fclose(fp1);
+    FILE *fp2 = fopen("usertime.txt", "w");
+    struct timespec start, end;
     for (int i = 0; i <= offset; i++) {
-        struct timespec start, end;
         lseek(fd, i, SEEK_SET);
-        clock_gettime(CLOCK_REALTIME, &start);
-        sz = read(fd, buf, sizeof(buf));
-        clock_gettime(CLOCK_REALTIME, &end);
+        clock_gettime(CLOCK_MONOTONIC, &start);
+        sz = read(fd, buf, 128);
+        clock_gettime(CLOCK_MONOTONIC, &end);
         printf("Reading from " FIB_DEV
                " at offset %d, returned the sequence "
                "%lld.\n",
                i, sz);
         long long ut = (long long) (end.tv_sec * 1e9 + end.tv_nsec) -
                        (start.tv_sec * 1e9 + start.tv_nsec);
-        //得到的執行時間寫進time.txt
-        fprintf(fp, "%d %lld %lld\n", i, ut, atoll(buf));
+        // long long ut = (long long) (end.tv_nsec - start.tv_nsec);
+        // 得到的執行時間寫進time.txt
+        fprintf(fp2, "%d %lld\n", i, ut);
     }
 
     for (int i = offset; i >= 0; i--) {
@@ -53,6 +56,6 @@ int main()
     }
 
     close(fd);
-    fclose(fp);
+    fclose(fp2);
     return 0;
 }
