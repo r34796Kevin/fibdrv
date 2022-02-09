@@ -36,9 +36,10 @@ check: all
 	$(MAKE) unload
 	$(MAKE) load
 	sudo taskset -c 7 ./client > out
+	#sudo taskset -c 7 ./client
 	$(MAKE) unload
-	@diff -u out scripts/expected.txt && $(call pass)
-	@scripts/verify.py
+	#@diff -u out scripts/expected.txt && $(call pass)
+	#@scripts/verify.py
 plot:
 	sh do_measurement.sh > /dev/null
 	
